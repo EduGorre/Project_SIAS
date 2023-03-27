@@ -2,10 +2,10 @@ clc;        clear;      close all;
 
 default_settings();
 %% Coefficients
-c1 = readmatrix('C1.csv');
-c2 = readmatrix('C2.csv');
-c3 = readmatrix('C3.csv');
-c4 = readmatrix('C4.csv');
+c1 = readmatrix('csv/C1.csv');
+c2 = readmatrix('csv/C2.csv');
+c3 = readmatrix('csv/C3.csv');
+c4 = readmatrix('csv/C4.csv');
 
 x = linspace(0,14,1000);
 
@@ -31,10 +31,10 @@ grid on
 
 %% f
 
-l0 = readmatrix('Lambda_0.csv');
-l30 = readmatrix('Lambda_30.csv');
-l45 = readmatrix('Lambda_45.csv');
-l60 = readmatrix('Lambda_60.csv');
+l0 = readmatrix('csv/Lambda_0.csv');
+l30 = readmatrix('csv/Lambda_30.csv');
+l45 = readmatrix('csv/Lambda_45.csv');
+l60 = readmatrix('csv/Lambda_60.csv');
 
 x_2 = linspace(0,1,1000);
 
