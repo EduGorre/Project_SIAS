@@ -76,6 +76,7 @@ legend('NACA 0009','NACA 0012','NACA 0014','Interpreter','latex')
 set(gca,'TickLabelInterpreter','latex');
 axis equal
 
+
 figure()
 plot3(x1(1)+x_vec*chord(1),y_pos(1)*ones(1,99),z(x_vec,nacas(1))*chord(1),'b', x1(1)+x_vec*chord(1),y_pos(1)*ones(1,99),-z(x_vec,nacas(1))*chord(1),'b')
 hold on 
