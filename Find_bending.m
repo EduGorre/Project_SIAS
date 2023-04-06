@@ -9,7 +9,7 @@
     INPUTS: 
         -> n_span_points: Number of points used to describe wing spanwise characteristics  (integer)
         -> fuel weight_dist, lift_dist: Distribution of the fuel weight and lift, respectively. Input expected from team A (1xn_span_points double)
-        -> wing_length: Wing length, which multiplied by the corresponding nu will give us the distance value for the moment calculation(float)
+        -> wing_length: b/2
         -> engine_pos: Nu index corresponding to the engine position  (integer)
         -> landing_gear_pos: Nu index corresponding to the landing gear position  (integer)
         -> engine_weight: Engine weight  (float)
@@ -34,9 +34,9 @@ for span_pos = 1:100
     if span_pos > engine_pos
         bending_moment_dist(span_pos) = force_distribution;
     elseif span_pos > landing_gear_pos
-        bending_moment_dist(span_pos) = force_distribution - engine_weight * nu(engine_pos)*wing_length;
+        bending_moment_dist(span_pos) = force_distribution - engine_weight * (nu(engine_pos)-nu(span_pos))*wing_length;
     else
-        bending_moment_dist(span_pos) = force_distribution - engine_weight * nu(engine_pos)*wing_length - landing_gear_weight * nu(landing_gear_pos)*wing_length;
+        bending_moment_dist(span_pos) = force_distribution - engine_weight * (nu(engine_pos)-nu(span_pos))*wing_length - landing_gear_weight * (nu(landing_gear_pos)-nu(span_pos))*wing_length;
     end
 end
 
