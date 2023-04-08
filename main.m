@@ -5,6 +5,8 @@ clear;
 %% DATA
 sweep=32.2; %degrees
 b=58;
+% b=55.6;
+% C_T= 2.3;
 
 % Import coordinates
 nacas=[0.14 0.12 0.09];
@@ -64,11 +66,17 @@ x_vec=linspace(0,1,99);
 y_vec=linspace(0,b/2,100);
 
 figure()
-plot(x_vec,z(x_vec,nacas(3)),x_vec,-z(x_vec,nacas(3)),'color',[0, 0.4470, 0.7410])
+plot(x_vec,z(x_vec,nacas(3)),'color',[0, 0.4470, 0.7410])
 hold on 
-plot(x_vec,z(x_vec,nacas(2)),x_vec,-z(x_vec,nacas(2)),'color',[0.8500, 0.3250, 0.0980])
+plot(x_vec,z(x_vec,nacas(2)),'color',[0.8500, 0.3250, 0.0980])
 hold on
-plot(x_vec,z(x_vec,nacas(1)),x_vec,-z(x_vec,nacas(1)),'color',[0.9290, 0.6940, 0.1250])
+plot(x_vec,z(x_vec,nacas(1)),'color',[0.9290, 0.6940, 0.1250])
+hold on
+plot(x_vec,-z(x_vec,nacas(3)),'color',[0, 0.4470, 0.7410])
+hold on
+plot(x_vec,-z(x_vec,nacas(2)),'color',[0.8500, 0.3250, 0.0980])
+hold on
+plot(x_vec,-z(x_vec,nacas(1)),'color',[0.9290, 0.6940, 0.1250])
 title('Normalized Airfoils','Interpreter','latex')
 xlabel('x/c','Interpreter','latex')
 ylabel('z/c','Interpreter','latex')
@@ -76,17 +84,16 @@ legend('NACA 0009','NACA 0012','NACA 0014','Interpreter','latex')
 set(gca,'TickLabelInterpreter','latex');
 axis equal
 
-
 figure()
-plot3(x1(1)+x_vec*chord(1),y_pos(1)*ones(1,99),z(x_vec,nacas(1))*chord(1),'b', x1(1)+x_vec*chord(1),y_pos(1)*ones(1,99),-z(x_vec,nacas(1))*chord(1),'b')
+plot3(x1(1)+x_vec*chord(1),y_pos(1)*ones(1,99),z(x_vec,nacas(1))*chord(1),x1(1)+x_vec*chord(1),y_pos(1)*ones(1,99),-z(x_vec,nacas(1))*chord(1),'color',[0.9290, 0.6940, 0.1250])
 hold on 
-plot3(x2(1)+x_vec*chord(2),y_pos(2)*ones(1,99),z(x_vec,nacas(2))*chord(2),'b',x2(1)+x_vec*chord(2),y_pos(2)*ones(1,99),-z(x_vec,nacas(2))*chord(2),'b')
+plot3(x2(1)+x_vec*chord(2),y_pos(2)*ones(1,99),z(x_vec,nacas(2))*chord(2),x2(1)+x_vec*chord(2),y_pos(2)*ones(1,99),-z(x_vec,nacas(2))*chord(2),'color',[0.8500, 0.3250, 0.0980])
 hold on
-plot3(x3(1)+x_vec*chord(3),y_pos(3)*ones(1,99),z(x_vec,nacas(3))*chord(3),'b',x3(1)+x_vec*chord(3),y_pos(3)*ones(1,99),-z(x_vec,nacas(3))*chord(3),'b')
+plot3(x3(1)+x_vec*chord(3),y_pos(3)*ones(1,99),z(x_vec,nacas(3))*chord(3),x3(1)+x_vec*chord(3),y_pos(3)*ones(1,99),-z(x_vec,nacas(3))*chord(3),'color',[0, 0.4470, 0.7410])
 hold on
-plot3(x_LE(y_vec),y_vec,zeros(1,100),'b')
+plot3(x_LE(y_vec),y_vec,zeros(1,100),'k')
 hold on
-plot3(x_TE(y_vec),y_vec,zeros(1,100),'b')
+plot3(x_TE(y_vec),y_vec,zeros(1,100),'k')
 title('Wing definition','Interpreter','latex')
 xlabel('x','Interpreter','latex')
 ylabel('y','Interpreter','latex')
