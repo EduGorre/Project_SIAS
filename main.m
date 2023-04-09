@@ -4,9 +4,9 @@ clear;
 
 %% DATA
 sweep=32.2; %degrees
-b=58;
-% b=55.6;
-% C_T= 2.3;
+% b=58;
+b=55.6;
+C_T= 2.3;
 
 % Import coordinates
 nacas=[0.14 0.12 0.09];
@@ -52,14 +52,20 @@ eta=[eta_front(2),eta_mid(2),eta_rear(3)];
 [eta_sec_1]=wing_box_def(eta,chord,y_pos,x1,x2,x3,b,x_LE,x_TE);
 
 %% ITERATION FOR ALL POSSIBLE COMBINATIONS OF SPAR LOCATIONS
-
-% for i=eta_front
-%     for j=eta_mid
-%         for k=eta_rear
-%             
-%         end
-%     end
-% end
+Minimum_weight=zeros(27,1);
+Boom_area=zeros(27,10);
+Thickness=zeros(27,11);
+for i=eta_front
+    for j=eta_mid
+        for k=eta_rear
+           % Calculo de minimo weight para cada configuracion
+           % Guardar area de booms y thickness
+        end
+    end
+end
+num_pos=(1:1:27);
+Configurations = table(Minimum_weight,Boom_area,Thickness);
+% writetable(Configurations,'Possible configurations.xlsx');
 
 %% PLOTS
 x_vec=linspace(0,1,99);
@@ -100,3 +106,10 @@ ylabel('y','Interpreter','latex')
 zlabel('z','Interpreter','latex')
 set(gca,'TickLabelInterpreter','latex');
 axis equal
+
+% figure()
+% plot(num_pos,Minimum_weight)
+% title('Weight minimization','Interpreter','latex')
+% xlabel('Cases','Interpreter','latex')
+% ylabel('Weight [kg]','Interpreter','latex')
+% set(gca,'TickLabelInterpreter','latex');
