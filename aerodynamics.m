@@ -1,5 +1,5 @@
 clc;
-clear all;
+clear;
 close all;
 
 %% AIRCRAFT DATA - METRIC 
@@ -48,34 +48,54 @@ y_l45 = polyval(p_l45,x_2);
 p_l60 = polyfit(l60(:,1),l60(:,2),2);
 y_l60 = polyval(p_l60,x_2);
 
+%-----TO DEFINE
+chord_data.c_k = 7.15; %Chord at the kink
+chord_data.c_cl =  13; %CL is center line?  INVENTADO
+chord_data.c_r = 11.9 %Chord at the root 
+chord_data.c_t = 2.3; %Chord at the tip
+
+span_data.b = 55.6; % [m]
+span_data.b_k = 10.6  ; %[m] 
+
+y_r = 5.77 ; %[m] the fuselage width
+n_span_points=100;
+%-----
+
+
+[c_l,eta] = find_lift_distrib(chord_data,span_data,y_r,n_span_points,x,y_c1,y_c2,y_c3,y_c4,x_2,y_l30);
+
+plot(eta,c_l);
+title('$Lift Distribution$')
+xlabel('$Non dimensional$ $Coordinate$ $\eta$')
+ylabel('$c_l$')
 
 %% helpers
 %Calculation of the Additional Lift Distribution : L_A(eta)
 function [L_A,C4] =additiona_lift(eta,AR,c_l_alpha,lambda_e_25,c_mean,c_eta, x, y_c1,y_c2,y_c3,y_c4,x_2,y_l30)
 
 %Get the Similitude parameter, F
-F = (2*pi*AR)/(c_l_alpha*cos(lambda_e_25))
+F = (2*pi*AR)/(c_l_alpha*cos(lambda_e_25));
 
 %Get Coeffs C1, C2,C3 from graph given the value of F 
 
 ind = interp1(x,1:length(x),F,'nearest');
-C1 = y_c1(ind)
-C2 = y_c2(ind)
-C3 = y_c3(ind)
-C4 = y_c4(ind)
+C1 = y_c1(ind);
+C2 = y_c2(ind);
+C3 = y_c3(ind);
+C4 = y_c4(ind);
 %Get value of f from graph
 ind2 = interp1(x_2,1:length(x_2),eta,'nearest');
-f = y_130(ind2) %Taking Delta_beta as 30degrees, calculated before
+f = y_l30(ind2); %Taking Delta_beta as 30degrees, calculated before
 
-L_A = C1*(c_eta/c_mean)+C2*(4/pi)*sqrt(1-(eta)^2)+C3*f
+L_A = C1*(c_eta/c_mean)+C2*(4/pi)*sqrt(1-(eta)^2)+C3*f;
 end
 
 
 %Calculation of the Basic Lift Distribution : L_B(eta)
 function L_B =basic_lift(eta,L_A,C4)
 
-expr(eta) = eta*L_A;
-alpha_01=int( expr , 0 , 1 );  %pag 18/48 CHECK!
+expr = @(eta) eta*L_A;
+alpha_01=integral( expr , 0 , 1 );  %pag 18/48 CHECK!
 
 L_B = L_A*C4*(eta-alpha_01);
 end
@@ -83,10 +103,10 @@ end
 
 
 %% main function
-function [c_l] = find_lift_distrib(chord_data,span_data,y_r,n_span_points)
+function [c_l,eta] = find_lift_distrib(chord_data,span_data,y_r,n_span_points,x,y_c1,y_c2,y_c3,y_c4,x_2,y_l30)
 
 %---INPUTS-----
-% chord_data:  a struct that provides the values for: c_k, c_cl, c_t
+% chord_data:  a struct that provides the values for: c_k, c_cl, c_t,c_r
 %  span_data:  a struct that provides the values for: b (wingspan), b_k (which is the distance between the two kinks)
 %        y_r:  The diameter of the fuselage, which I dont think I need!
 %    n_span_points:  The required dimensions for the vector of eta. eta is
@@ -100,17 +120,17 @@ function [c_l] = find_lift_distrib(chord_data,span_data,y_r,n_span_points)
 % - - - - - - -
 
 %Create the vector of positions along the span
-eta = linspace(0:1:n_span_points);
+eta = linspace(0,1,n_span_points);
 
 %Allocate a vector to relate the different lift coefficients to the positions of eta
-c_l = zeros(1,n_span_points)
+c_l = zeros(1,n_span_points);
 
 
 
 %Areas
 S_in = 0.5*(chord_data.c_k+chord_data.c_cl)*span_data.b_k;
 S_out = 0.5*(chord_data.c_k+chord_data.c_t)*(span_data.b-span_data.b_k);
-S_fus = 0.5*(chord_data.c_r+chord_data.c_l)*y_r;
+S_fus = 0.5*(chord_data.c_r+chord_data.c_cl)*y_r;
 
 S_e =S_in+S_out-S_fus;
 
@@ -138,23 +158,27 @@ lambda_beta = lambda_e_25 / atan(beta);
 
 c_l_alpha = (2*pi)/(sqrt(1-(Mach*cos(lambda_e_25))^2));
 
-AR_e = (span_data.b^2)/S_e
+AR_e = (span_data.b^2)/S_e;
 
 C_L_alpha = (2*pi*AR_e)/(2+sqrt(((2*pi*AR_e)/(cos(lambda_beta)*c_l_alpha))^2+4));
 
-c_mean = S_e/span_data.b
+c_mean = S_e/span_data.b;
 
-epsilon_t = 2.5* (pi/180) %[rad]
+epsilon_t = 2.5* (pi/180); %[rad]
 
 %Calculation of the Lift distribution 
 
 for i = 1:n_span_points
     %Chord at specific eta value
     c_eta = c_cle*(1-(1-lambda_e)*eta(i)); %In-between parenthesis is the equivalent wing chord 
-    [L_A,C4] =additiona_lift(eta(i),AR,c_l_alpha,lambda_e_25,c_mean,c_eta, x, y_c1,y_c2,y_c3,y_c4,x_2,y_l30);
-    L_B =basic_lift(eta,L_A,C4);
+
+    [L_A,C4] =additiona_lift(eta(i),AR_e,c_l_alpha,lambda_e_25,c_mean,c_eta,x, y_c1,y_c2,y_c3,y_c4,x_2,y_l30);
+
+    L_B =basic_lift(eta(i),L_A,C4);
+
     c_l(i) = (c_mean*(C_L_w*L_A+epsilon_t*C_L_alpha*L_B))/c_eta;
 end
 
 
 end
+
