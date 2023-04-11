@@ -113,3 +113,34 @@ axis equal
 % xlabel('Cases','Interpreter','latex')
 % ylabel('Weight [kg]','Interpreter','latex')
 % set(gca,'TickLabelInterpreter','latex');
+
+%% LIFT
+
+chord_data.c_k = 7.15; %Chord at the kink
+chord_data.c_cl = 13.7892008257736; %CL is center line
+chord_data.c_r = 11.9; %Chord at the root 
+chord_data.c_t = 1.8284; %Chord at the tip
+
+span_data.b = 58; % [m]
+span_data.b_k = 10.6*2; %[m] 
+
+y_r = 3*2; %[m] the fuselage width
+n_span_points=500;
+
+[c_l,eta] = get_lift_distrib(chord_data,span_data,y_r,n_span_points);
+
+figure()
+plot(eta,c_l);
+title('$Lift Distribution$')
+xlabel('$Non dimensional$ $Coordinate$ $\eta$')
+ylabel('$c_l$')
+
+
+
+
+
+
+
+
+
+
