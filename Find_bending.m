@@ -27,9 +27,9 @@ function [bending_moment_dist] = Find_bending (n_span_points, fuel_weight_dist,l
 
 bending_moment_dist = zeros(1, n_span_points);
 
-for span_pos = 1:100
+for span_pos = 1:n_span_points
     iter_range = span_pos:n_span_points;
-    force_distribution = sum((lift_dist(iter_range)-fuel_weight_dist(iter_range)-wing_weight_dist(iter_range))) .* (nu(iter_range)-nu(span_pos)) * wing_length;
+    force_distribution = sum((lift_dist(iter_range)-fuel_weight_dist(iter_range)-wing_weight_dist(iter_range)) .* (nu(iter_range) * wing_length));
 
     if span_pos > engine_pos
         bending_moment_dist(span_pos) = force_distribution;
