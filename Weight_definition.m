@@ -21,7 +21,7 @@ span
 %}
 
 
-function [W_total_vector, W_structural, landing_gear_weight, landing_gear_pos, engine_weight, engine_pos] = Weight_definition (cord, surface, n_span_points, wing_span, W_fuel)
+function [W_total_vector, W_structural, landing_gear_weight, landing_gear_pos, engine_weight, engine_pos] = Weight_definition (chord, n_span_points, wing_span, W_fuel)
 
 W_w= 7938; %structural weight of the wing (according to ChatGPT)
 W_max=172365.1; %Max plane weight at landing 
