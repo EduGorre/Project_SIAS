@@ -24,9 +24,9 @@ function [eta_sec1]=wing_box_def(eta,chord,y_pos,x1,x2,x3,span,x_LE,x_TE)
     x_mid=@(y) (x3(1)+eta(2)*chord(3)-x2(1)-eta(2)*chord(2))/(y_pos(3)-y_pos(2))*(y-y_pos(2))+x2(1)+eta(2)*chord(2);
     x_rear=@(y) (x3(1)+eta(3)*chord(3)-x2(1)-eta(3)*chord(2))/(y_pos(3)-y_pos(2))*(y-y_pos(2))+x2(1)+eta(3)*chord(2);
     
-    eta_sec1(1)=x_front(y_pos(1));
-    eta_sec1(2)=x_front(y_pos(2));
-    eta_sec1(3)=x_front(y_pos(3));
+    eta_sec1(1)=x_front(y_pos(1))/chord(1);
+    eta_sec1(2)=x_mid(y_pos(1))/chord(1);
+    eta_sec1(3)=x_rear(y_pos(1))/chord(1);
     
     y_vec=linspace(0,span/2,100);
     figure()

@@ -72,13 +72,13 @@ end
 %Now find the y-coordinate using first equation.
 
 for i=1:nB/2-(n+1)
-    B_inercial(i,3)= y(B_inercial(i,2));
+    B_inercial(i,3)= y(B_inercial(i,2)/c)*c;
 end
 for i=nB/2-(n):nB-n-1
-    B_inercial(i,3)= -y(B_inercial(i,2));
+    B_inercial(i,3)= -y(B_inercial(i,2)/c)*c;
 end
 for i=nB-n:nB
-    B_inercial(i,3)= y(B_inercial(i,2));
+    B_inercial(i,3)= y(B_inercial(i,2)/c)*c;
 end
 
 
@@ -90,7 +90,15 @@ for i=1:nB
     p=p+a(i)*B_inercial(i,2);
     r=r+a(i);
 end
-CoM=p/r;
+CoM_x=p/r;
+
+p=0;
+r=0;
+for i=1:nB
+    p=p+a(i)*B_inercial(i,3);
+    r=r+a(i);
+end
+CoM_y=p/r;
 
 %Notice that this coordinates consider the origin the LE of the chord-line.
 %Hence we need to change now our origin to our CoM, since our airfoils are
@@ -98,7 +106,11 @@ CoM=p/r;
 
 B=B_inercial;
 for i=1:nB
-    B(i,2)=B_inercial(i,2)-CoM;
+    B(i,2)=B_inercial(i,2)-CoM_x;
+end
+
+for i=1:nB
+    B(i,3)=B_inercial(i,3)-CoM_y;
 end
 
 %% Calculation of shear flow once data is known
@@ -108,6 +120,21 @@ Ix=0;
 for i=1:nB
     Ix=Ix+B(i,1)*B(i,3)^2;
 end
+
+%Calculation of Iy
+
+Iy=0;
+for i=1:nB
+    Iy=Iy+B(i,1)*B(i,2)^2;
+end
+
+%Calculation of Pxy
+
+Pxy=0;
+for i=1:nB
+    Pxy=Pxy+B(i,1)*B(i,2)*B(i,3);
+end
+
 
 %Calculation of the shear flow with a cut between booms 1 and 2 and booms
 %nB and 1. q_open(i) will be the flow from (i) to (i+1). The only exception
@@ -124,11 +151,13 @@ q_open(nB)=0; %!CORRECTION ÓSCAR: 25/03/2023 21:00
 %!Code line before correction:
 %q_open(q_open-1)=0;
 
-K=(Lift-W_inert)/Ix;
+K_1=(Lift-W_inert)*Pxy/(Ix*Iy-Pxy^2);
+K_2=(Lift-W_inert)*Iy/(Ix*Iy-Pxy^2);
+
 
 %For the first panels is straight forward because it is a linear sequence.
 for i=2:nB/2
-    q_open(i)=q_open(i-1)-K*(B(i,1))*(B(i,3));
+    q_open(i)=q_open(i-1)+K_1*(B(i,1))*(B(i,2))-K_2*(B(i,1))*(B(i,3));
 end
 
 %Calculation of the shear of that excepcional panel.
@@ -247,15 +276,15 @@ Shear_torque=Shear_torque+q_open(nB/2-(n+1))*l(nB/2-(n+1))*(spar(3)-spar(2))*c;
 Shear_torque=Shear_torque+q_open(nB-n-1)*l(nB-n-1)*(spar(2)-spar(1))*c;
 
 %Contribution of last skin independent of n
-Shear_torque=Shear_torque+q_open(nB)*l(nB)*(abs(cos(theta(nB)))*(B(nB,3)-B(nB/2+1,3))-abs(sin(theta(nB))*(B(nB/2+1,2)-B(nB,2))));
+Shear_torque=Shear_torque+q_open(nB)*l(nB)*((cos(theta(nB)))*(B(nB,3)-B(nB/2+1,3))+(sin(theta(nB))*(B(nB/2+1,2)-B(nB,2))));
 
 %Additional panels dependent on n
 switch n
     case 1
-        Shear_torque=Shear_torque+q_open(2)*l(2)*(abs((sin(theta(2)))*(B(2,2)-B(6,2))+abs(cos(theta(2)))*(B(2,3)-B(6,3))));
-        Shear_torque=Shear_torque+q_open(4)*l(4)*(abs((sin(theta(4)))*(B(4,2)-B(6,2))-abs(cos(theta(4)))*(B(4,3)-B(6,3))));
-        Shear_torque=Shear_torque+q_open(7)*l(7)*(-abs(sin(theta(7)))*(B(6,2)-B(7,2))+abs(cos(theta(7)))*(B(6,3)-B(7,3)));
-        Shear_torque=Shear_torque+q_open(9)*l(9)*(-abs(sin(theta(9)))*(B(6,2)-B(9,2))+abs(cos(theta(9)))*(B(9,3)-B(6,3)));
+        Shear_torque=Shear_torque+q_open(2)*l(2)*(((-sin(theta(2)))*(B(2,2)-B(6,2))+(cos(theta(2)))*(B(2,3)-B(6,3))));
+        Shear_torque=Shear_torque+q_open(4)*l(4)*(((-sin(theta(4)))*(B(4,2)-B(6,2))+(-cos(theta(4)))*(B(4,3)-B(6,3))));
+        Shear_torque=Shear_torque+q_open(7)*l(7)*(-(sin(theta(7)))*(B(6,2)-B(7,2))+(-cos(theta(7)))*(B(6,3)-B(7,3)));
+        Shear_torque=Shear_torque+q_open(9)*l(9)*(abs(sin(theta(9)))*(B(6,2)-B(9,2))+abs(cos(theta(9)))*(B(9,3)-B(6,3)));
 
     case 2
         Shear_torque=Shear_torque+q_open(2)*l(2)*(abs(sin(theta(2)))*(B(2,2)-B(8,2))+abs(cos(theta(2)))*(B(2,3)-B(8,3)));
@@ -315,5 +344,3 @@ for i=1:nB
 end 
 
 end
-
-
