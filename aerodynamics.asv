@@ -29,8 +29,8 @@ n_span_points=500;
 
 
 [c_l,eta,lbsum] = find_lift_distrib(chord_data,span_data,y_r,n_span_points,p_l0);
-x_sum = linspace(0,1,n_span_points);
-sum = trapz(x_sum,lbsum)
+
+s
 
 plot(eta,c_l);
 title('$Lift Distribution$')
@@ -58,7 +58,7 @@ end
 %Calculation of the Basic Lift Distribution : L_B(eta)
 function L_B =basic_lift(eta,L_A,C4)
 
-expr = @(eta) eta.^2*L_A;
+expr = @(eta) eta*L_A;
 alpha_01=integral( expr , 0 , 1 );  %pag 18/48 CHECK!
 
 L_B = L_A*C4*(eta-alpha_01);
@@ -110,7 +110,7 @@ lambda_e_25 = atan(tand(32.2)-0.5*(c_cle*(1-lambda_e))/span_data.b);
 n_z = 2.5; %Pull-up load factor
 W_max = 228930; %MTOW [kg]
 rho_c = 0.364;  %@42,975 ft in [kg/m^3]
-V_c = 250.833; %[m/s] 
+V_c = 903; %[km/h]
 C_L = (2*n_z*W_max)/(S_e*rho_c*V_c^2);
 Mach = 0.85;
 
@@ -141,7 +141,7 @@ for i = 1:n_span_points
     L_B =basic_lift(eta(i),L_A,C4);
     lbsum(i) = L_B;
 
-    c_l(i) = (c_mean*(C_L_w*L_A+epsilon_t*C_L_alpha*L_B));
+    c_l(i) = (c_mean*(C_L_w*L_A+epsilon_t*C_L_alpha*L_B))/c_eta;
 end
 
 
